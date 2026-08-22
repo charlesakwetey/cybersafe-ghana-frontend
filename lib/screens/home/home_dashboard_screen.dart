@@ -166,11 +166,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                 reservedSize: 32,
                 interval: 1,
                 getTitlesWidget: (value, meta) {
-                  if (value != value.roundToDouble())
-                    return const SizedBox.shrink();
+                  if (value != value.roundToDouble()) return const SizedBox.shrink();
+                  final textColor = Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white70
+                      : Colors.black87;
                   return Text(
                     value.toInt().toString(),
-                    style: const TextStyle(fontSize: 11),
+                    style: TextStyle(fontSize: 11, color: textColor),
                   );
                 },
               ),
@@ -190,12 +192,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                     _typeStats![index]['scam_type'],
                   );
                   final shortLabel = label.split(' ').first;
+                  final textColor = Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white70
+                      : Colors.black87;
                   return Padding(
                     padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      shortLabel,
-                      style: const TextStyle(fontSize: 10),
-                    ),
+                    child: Text(shortLabel, style: TextStyle(fontSize: 10, color: textColor)),
                   );
                 },
               ),

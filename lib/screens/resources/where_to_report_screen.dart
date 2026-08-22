@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../utils/constants.dart';
+import '../settings/settings_screen.dart';
 
 class WhereToReportScreen extends StatelessWidget {
   const WhereToReportScreen({super.key});
@@ -20,7 +21,18 @@ class WhereToReportScreen extends StatelessWidget {
         title: const Text('Where to Report'),
         backgroundColor: AppColors.navy,
         foregroundColor: Colors.white,
-      ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+        ],
+    ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -65,7 +77,8 @@ class WhereToReportScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _ResourceCard(
               title: 'Ghana Police Service',
-              subtitle: 'Cyber Crime Unit (CID) — also available at regional commands',
+              subtitle:
+                  'Cyber Crime Unit (CID) — also available at regional commands',
               icon: Icons.local_police_outlined,
               accentColor: AppColors.navy,
               rows: [
@@ -84,7 +97,7 @@ class WhereToReportScreen extends StatelessWidget {
                   ),
                 ),
               ],
-          ),
+            ),
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(14),
@@ -211,7 +224,11 @@ class _ContactRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: onTap != null ? AppColors.navy : Colors.grey.shade800,
+                color: onTap != null
+                    ? (Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.ghanaGold
+                        : AppColors.navy)
+                    : Colors.grey.shade400,
               ),
             ),
           ],
