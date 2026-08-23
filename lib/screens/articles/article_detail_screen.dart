@@ -10,12 +10,12 @@ class ArticleDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.ghanaGold
+        : AppColors.navy;
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text('Awareness Hub'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -25,13 +25,15 @@ class ArticleDetailScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.navy.withValues(alpha: 0.1),
+                color: accentColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 ScamTypes.labelFor(article.category),
                 style: TextStyle(
-                  color: AppColors.navy,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.ghanaGold
+                      : accentColor,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -68,17 +70,17 @@ class ArticleDetailScreen extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.navy),
+                  border: Border.all(color: accentColor),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.flag_outlined, color: AppColors.navy, size: 18),
+                    Icon(Icons.flag_outlined, color: accentColor, size: 18),
                     const SizedBox(width: 8),
                     Text(
                       'Seen this scam? Report it',
                       style: TextStyle(
-                        color: AppColors.navy,
+                        color: accentColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

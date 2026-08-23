@@ -88,11 +88,8 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text('Awareness Hub'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [

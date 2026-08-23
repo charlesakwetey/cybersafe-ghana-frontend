@@ -29,7 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(index: _selectedIndex, children: _tabs),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: AppColors.navy,
+        selectedItemColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.ghanaGold
+            : AppColors.navy,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {

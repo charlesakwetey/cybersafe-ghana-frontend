@@ -23,6 +23,11 @@ class CyberSafeGhanaApp extends StatelessWidget {
             brightness: Brightness.light,
             primaryColor: AppColors.navy,
             scaffoldBackgroundColor: AppColors.cream,
+            cardColor: Colors.white,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: AppColors.navy,
+              foregroundColor: Colors.white,
+            ),
             colorScheme: ColorScheme.fromSeed(
               seedColor: AppColors.navy,
               brightness: Brightness.light,
@@ -34,6 +39,11 @@ class CyberSafeGhanaApp extends StatelessWidget {
             brightness: Brightness.dark,
             primaryColor: AppColors.navy,
             scaffoldBackgroundColor: const Color(0xFF121212),
+            cardColor: const Color(0xFF1E1E1E),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color(0xFF1C2833),
+              foregroundColor: Colors.white,
+            ),
             colorScheme: ColorScheme.fromSeed(
               seedColor: AppColors.navy,
               brightness: Brightness.dark,

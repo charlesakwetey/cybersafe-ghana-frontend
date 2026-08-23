@@ -74,11 +74,8 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     final report = widget.report;
 
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text('Report Details'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
         actions: [
           if (report.status == 'pending')
             IconButton(
@@ -119,7 +116,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: _statusColor(report.status) .withValues(alpha: 0.15),
+                    color: _statusColor(report.status).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -162,7 +159,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.warning .withValues(alpha: 0.15),
+                  color: AppColors.warning.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(

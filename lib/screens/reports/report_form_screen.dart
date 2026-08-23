@@ -64,12 +64,9 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text('Report a Scam'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
-      ),
+     ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -78,7 +75,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedScamType,
+                initialValue: _selectedScamType,
                 decoration: const InputDecoration(
                   labelText: 'Scam Type',
                   border: OutlineInputBorder(),
@@ -124,7 +121,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedRegion,
+                initialValue: _selectedRegion,
                 decoration: const InputDecoration(
                   labelText: 'Region',
                   border: OutlineInputBorder(),

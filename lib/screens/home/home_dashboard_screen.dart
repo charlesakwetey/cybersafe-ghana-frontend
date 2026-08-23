@@ -50,11 +50,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text('CyberSafe Ghana'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
       ),
       body: RefreshIndicator(onRefresh: _loadData, child: _buildBody()),
     );
@@ -103,7 +100,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.navy,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.ghanaGold
+                : AppColors.navy,
           ),
         ),
         const SizedBox(height: 12),
@@ -114,7 +113,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.navy,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.ghanaGold
+                : AppColors.navy,
           ),
         ),
         const SizedBox(height: 12),

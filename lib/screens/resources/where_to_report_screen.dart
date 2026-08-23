@@ -16,11 +16,8 @@ class WhereToReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text('Where to Report'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -32,7 +29,7 @@ class WhereToReportScreen extends StatelessWidget {
             },
           ),
         ],
-    ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -108,12 +105,23 @@ class WhereToReportScreen extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.charcoal, size: 20),
+                  Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.charcoal,
+                    size: 20,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'CyberSafe Ghana is an awareness and reporting tool, not a law enforcement agency. For urgent cases, contact these official channels directly.',
-                      style: TextStyle(fontSize: 13, color: AppColors.charcoal),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.charcoal,
+                      ),
                     ),
                   ),
                 ],
@@ -226,8 +234,8 @@ class _ContactRow extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 color: onTap != null
                     ? (Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.ghanaGold
-                        : AppColors.navy)
+                          ? AppColors.ghanaGold
+                          : AppColors.navy)
                     : Colors.grey.shade400,
               ),
             ),

@@ -46,11 +46,8 @@ class _ReportListScreenState extends State<ReportListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
-      appBar: AppBar(
-        title: const Text('My Reports'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
+     appBar: AppBar(
+       title: const Text('My Reports'),
       ),
       body: RefreshIndicator(onRefresh: _loadReports, child: _buildBody()),
       floatingActionButton: FloatingActionButton.extended(
