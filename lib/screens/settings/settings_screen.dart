@@ -3,6 +3,7 @@ import '../../../services/auth_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/theme_controller.dart';
 import '../auth/login_screen.dart';
+import '../../models/user_model.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,8 +13,25 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  Future<void> _handleLogout() async {
-    final confirmed = await showDialog<bool>(
+  AppUser? _user;
+  bool _isLoadingUser = true;
+
+    @override
+    void initState() {
+      super.initState();
+      _loadUser();
+    }
+
+    Future<void> _loadUser() async {
+      final user = await AuthService.getCurrentUser();
+      setState(() {
+        _user = user;
+        _isLoadingUser = false;
+      });
+    }
+
+    Future<void> _handleLogout() async {
+      final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Log out?'),
@@ -89,6 +107,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 8),
+          Card(
+            child: _isLoadingUser
+                ? const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : _user == null
+                    ? const ListTile(title: Text('Could not load account info'))
+                    : Column(
+                        children: [
+                        ListTile(
+                          leading: const Icon(Icons.person_outline),
+                          title: Text(_user!.username),
+                          subtitle: Text(_user!.email.isNotEmpty ? _user!.email : 'No email set'),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.location_on_outlined),
+                          title: Text(_user!.region.isNotEmpty ? _user!.region : 'No region set'),
+                          subtitle: const Text('Region'),
+                        ),
+                      ],
+                    ),
+          ),
+          const SizedBox(height: 12),
           Card(
             child: ListTile(
               leading: Icon(Icons.logout, color: AppColors.danger),

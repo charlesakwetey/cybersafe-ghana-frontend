@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'api_client.dart';
 import 'token_storage.dart';
+import '../models/user_model.dart';
 
 class AuthService {
   static Future<String?> login(String username, String password) async {
@@ -49,5 +50,13 @@ class AuthService {
 
   static Future<void> logout() async {
     await TokenStorage.clearTokens();
+  }
+
+  static Future<AppUser?> getCurrentUser() async {
+    final response = await ApiClient.get('me/');
+    if (response.statusCode == 200) {
+      return AppUser.fromJson(jsonDecode(response.body));
+    }
+    return null;
   }
 }
