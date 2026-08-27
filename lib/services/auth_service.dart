@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'api_client.dart';
 import 'token_storage.dart';
 import '../models/user_model.dart';
+import 'dart:io';
+
 
 class AuthService {
   static Future<String?> login(String username, String password) async {
@@ -58,5 +60,23 @@ class AuthService {
       return AppUser.fromJson(jsonDecode(response.body));
     }
     return null;
+  }
+
+  static Future<String?> uploadAvatar(File imageFile) async {
+    final response = await ApiClient.uploadFile('me/avatar/', 'avatar', imageFile);
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      return 'Failed to upload photo';
+    }
+  }
+
+  static Future<String?> updateRegion(String region) async {
+    final response = await ApiClient.patch('me/', {'region': region});
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      return 'Failed to update region';
+    }
   }
 }

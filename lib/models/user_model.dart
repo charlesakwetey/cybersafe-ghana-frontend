@@ -4,6 +4,7 @@ class AppUser {
   final String email;
   final String role;
   final String region;
+  final String? avatarUrl;
 
   AppUser({
     required this.id,
@@ -11,6 +12,7 @@ class AppUser {
     required this.email,
     required this.role,
     required this.region,
+    this.avatarUrl,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class AppUser {
       email: json['email'] ?? '',
       role: json['role'] ?? 'user',
       region: json['region'] ?? '',
+      avatarUrl: json['avatar'],
     );
   }
 

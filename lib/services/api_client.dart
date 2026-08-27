@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'token_storage.dart';
+import 'dart:io';
 
 class ApiClient {
   static const String baseUrl = 'http://10.0.2.2:8000/api';
@@ -34,5 +35,21 @@ class ApiClient {
   static Future<http.Response> delete(String endpoint, {bool auth = true}) async {
     final headers = await _headers(auth: auth);
     return http.delete(Uri.parse('$baseUrl/$endpoint'), headers: headers);
+  }
+
+  static Future<http.Response> uploadFile(
+    String endpoint,
+    String fieldName,
+    File file,
+  ) async {
+    final token = await TokenStorage.getAccessToken();
+    final uri = Uri.parse('$baseUrl/$endpoint');
+    final request = http.MultipartRequest('PATCH', uri);
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.files.add(await http.MultipartFile.fromPath(fieldName, file.path));
+    final streamedResponse = await request.send();
+    return http.Response.fromStream(streamedResponse);
   }
 }

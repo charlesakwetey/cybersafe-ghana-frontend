@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../services/auth_service.dart';
-import '../../../utils/constants.dart';
-import '../../../utils/theme_controller.dart';
-import '../auth/login_screen.dart';
 import '../../models/user_model.dart';
+import '../../services/auth_service.dart';
+import '../../utils/constants.dart';
+import '../../utils/theme_controller.dart';
+import '../auth/login_screen.dart';
+import 'user_profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,22 +17,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   AppUser? _user;
   bool _isLoadingUser = true;
 
-    @override
-    void initState() {
-      super.initState();
-      _loadUser();
-    }
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
 
-    Future<void> _loadUser() async {
-      final user = await AuthService.getCurrentUser();
-      setState(() {
-        _user = user;
-        _isLoadingUser = false;
-      });
-    }
+  Future<void> _loadUser() async {
+    final user = await AuthService.getCurrentUser();
+    setState(() {
+      _user = user;
+      _isLoadingUser = false;
+    });
+  }
 
-    Future<void> _handleLogout() async {
-      final confirmed = await showDialog<bool>(
+  Future<void> _handleLogout() async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Log out?'),
@@ -61,82 +62,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _openUserProfile() async {
+    if (_user == null) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfileScreen(user: _user!)),
+    );
+    // Refresh in case the user changed their region or photo
+    _loadUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings')
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            'Display',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 8),
           Card(
-            child: ValueListenableBuilder<ThemeMode>(
-              valueListenable: ThemeController.themeMode,
-              builder: (context, mode, _) {
-                return SwitchListTile(
-                  secondary: const Icon(Icons.dark_mode_outlined),
-                  title: const Text('Dark mode'),
-                  value: mode == ThemeMode.dark,
-                  activeThumbColor: AppColors.navy,
-                  onChanged: (value) {
-                    ThemeController.toggle(value);
-                  },
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Account',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: _isLoadingUser
-                ? const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                : _user == null
-                    ? const ListTile(title: Text('Could not load account info'))
-                    : Column(
-                        children: [
-                        ListTile(
-                          leading: const Icon(Icons.person_outline),
-                          title: Text(_user!.username),
-                          subtitle: Text(_user!.email.isNotEmpty ? _user!.email : 'No email set'),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: _isLoadingUser
+                  ? const Center(child: CircularProgressIndicator())
+                  : Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundColor: Colors.grey.shade300,
+                          backgroundImage: _user?.avatarUrl != null
+                              ? NetworkImage(_user!.avatarUrl!)
+                              : null,
+                          child: _user?.avatarUrl == null
+                              ? const Icon(Icons.person, color: Colors.white, size: 28)
+                              : null,
                         ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.location_on_outlined),
-                          title: Text(_user!.region.isNotEmpty ? _user!.region : 'No region set'),
-                          subtitle: const Text('Region'),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome',
+                                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                              ),
+                              Text(
+                                _user?.username ?? '',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.logout, color: AppColors.danger),
+                          onPressed: _handleLogout,
                         ),
                       ],
                     ),
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          Text(
+            'Other settings',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
           Card(
-            child: ListTile(
-              leading: Icon(Icons.logout, color: AppColors.danger),
-              title: Text('Log out', style: TextStyle(color: AppColors.danger)),
-              onTap: _handleLogout,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: const Text('User Profile'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _openUserProfile,
+                ),
+                const Divider(height: 1),
+                ValueListenableBuilder<ThemeMode>(
+                  valueListenable: ThemeController.themeMode,
+                  builder: (context, mode, _) {
+                    return SwitchListTile(
+                      secondary: const Icon(Icons.dark_mode_outlined),
+                      title: const Text('Dark mode'),
+                      value: mode == ThemeMode.dark,
+                      activeThumbColor: AppColors.navy,
+                      onChanged: (value) {
+                        ThemeController.toggle(value);
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],
