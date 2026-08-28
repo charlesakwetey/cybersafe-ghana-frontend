@@ -1,21 +1,112 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../models/article_model.dart';
+import '../../services/bookmark_service.dart';
 import '../../utils/constants.dart';
 import '../reports/report_form_screen.dart';
 
-class ArticleDetailScreen extends StatelessWidget {
+class ArticleDetailScreen extends StatefulWidget {
   final Article article;
 
   const ArticleDetailScreen({super.key, required this.article});
 
   @override
+  State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
+}
+
+class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  bool _isBookmarked = false;
+  int? _bookmarkId;
+  bool _isCheckingBookmark = true;
+  bool _isTogglingBookmark = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBookmarkStatus();
+  }
+
+  Future<void> _checkBookmarkStatus() async {
+    try {
+      final bookmarks = await BookmarkService.getBookmarks();
+      final match = bookmarks.where((b) => b.article.id == widget.article.id);
+      if (match.isNotEmpty) {
+        setState(() {
+          _isBookmarked = true;
+          _bookmarkId = match.first.id;
+        });
+      }
+    } catch (e) {
+      // fail silently, bookmark button just won't show as active
+    } finally {
+      setState(() {
+        _isCheckingBookmark = false;
+      });
+    }
+  }
+
+  Future<void> _toggleBookmark() async {
+    setState(() {
+      _isTogglingBookmark = true;
+    });
+
+    if (_isBookmarked && _bookmarkId != null) {
+      final success = await BookmarkService.removeBookmark(_bookmarkId!);
+      if (success) {
+        setState(() {
+          _isBookmarked = false;
+          _bookmarkId = null;
+        });
+      }
+    } else {
+      final newId = await BookmarkService.addBookmark(widget.article.id);
+      if (newId != null) {
+        setState(() {
+          _isBookmarked = true;
+          _bookmarkId = newId;
+        });
+      }
+    }
+
+    setState(() {
+      _isTogglingBookmark = false;
+    });
+  }
+
+  void _shareArticle() {
+    Share.share(
+      '${widget.article.title}\n\n${widget.article.body}\n\nShared from CyberSafe Ghana',
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final article = widget.article;
     final accentColor = Theme.of(context).brightness == Brightness.dark
         ? AppColors.ghanaGold
         : AppColors.navy;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Awareness Hub'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_outlined),
+            onPressed: _shareArticle,
+          ),
+          IconButton(
+            icon: _isCheckingBookmark || _isTogglingBookmark
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(_isBookmarked ? Icons.bookmark : Icons.bookmark_border),
+            onPressed: (_isCheckingBookmark || _isTogglingBookmark)
+                ? null
+                : _toggleBookmark,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -31,9 +122,7 @@ class ArticleDetailScreen extends StatelessWidget {
               child: Text(
                 ScamTypes.labelFor(article.category),
                 style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.ghanaGold
-                      : accentColor,
+                  color: accentColor,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),

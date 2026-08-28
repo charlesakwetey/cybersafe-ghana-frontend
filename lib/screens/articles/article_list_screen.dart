@@ -3,6 +3,7 @@ import '../../models/article_model.dart';
 import '../../services/article_service.dart';
 import '../../utils/constants.dart';
 import 'article_detail_screen.dart';
+import 'bookmarks_screen.dart';
 
 class ArticleListScreen extends StatefulWidget {
   const ArticleListScreen({super.key});
@@ -90,6 +91,19 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Awareness Hub'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bookmark_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BookmarksScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
