@@ -1,103 +1,125 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../utils/constants.dart';
-import 'signup_screen.dart';
-import '../home_screen.dart';
-import 'forgot_password_screen.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  final String email;
+
+  const ResetPasswordScreen({super.key, required this.email});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final _codeController = TextEditingController();
+  final _newPasswordController = TextEditingController();
   bool _isLoading = false;
-  String? _errorMessage;
+  String? _message;
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleReset() async {
+    if (_codeController.text.trim().length != 6) {
+      setState(() {
+        _message = 'Enter the 6-digit code from your email';
+      });
+      return;
+    }
+    if (_newPasswordController.text.length < 6) {
+      setState(() {
+        _message = 'Password must be at least 6 characters';
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
+      _message = null;
     });
 
-    final error = await AuthService.login(
-      _usernameController.text.trim(),
-      _passwordController.text,
+    final error = await AuthService.confirmPasswordReset(
+      email: widget.email,
+      code: _codeController.text.trim(),
+      newPassword: _newPasswordController.text,
     );
 
     setState(() {
       _isLoading = false;
-      _errorMessage = error;
     });
 
     if (error == null && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset! Please log in.')),
       );
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
+    } else {
+      setState(() {
+        _message = error;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      appBar: AppBar(title: const Text('Enter Reset Code')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 20),
               Text(
-                'CyberSafe Ghana',
+                'Check your email',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: AppColors.navy,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Log in to continue',
+                'We sent a 6-digit code to ${widget.email}',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: AppColors.charcoal),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
               TextField(
-                controller: _usernameController,
+                controller: _codeController,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
                 decoration: const InputDecoration(
-                  labelText: 'Email or Username',
+                  labelText: '6-digit code',
                   border: OutlineInputBorder(),
+                  counterText: '',
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _passwordController,
+                controller: _newPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'New password (min 6 characters)',
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 8),
-              if (_errorMessage != null)
+              if (_message != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    _errorMessage!,
+                    _message!,
                     style: TextStyle(color: AppColors.danger),
                   ),
                 ),
-              const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: _isLoading ? null : _handleLogin,
+                onPressed: _isLoading ? null : _handleReset,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.navy,
                   foregroundColor: Colors.white,
@@ -112,36 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Log In'),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignupScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Don't have an account? Sign Up",
-                  style: TextStyle(color: AppColors.navy),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ForgotPasswordScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Forgot Password?",
-                  style: TextStyle(color: AppColors.navy),
-                ),
+                    : const Text('Reset Password'),
               ),
             ],
           ),

@@ -19,12 +19,19 @@ class _SignupScreenState extends State<SignupScreen> {
   String? _errorMessage;
 
   Future<void> _handleSignup() async {
+    if (_emailController.text.trim().isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter your email';
+      });
+      return;
+    }
     if (_selectedRegion == null) {
       setState(() {
         _errorMessage = 'Please select your region';
       });
       return;
     }
+    
 
     setState(() {
       _isLoading = true;
@@ -105,7 +112,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedRegion,
+                initialValue: _selectedRegion,
                 decoration: const InputDecoration(
                   labelText: 'Region',
                   border: OutlineInputBorder(),

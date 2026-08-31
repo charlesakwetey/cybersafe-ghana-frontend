@@ -79,4 +79,36 @@ class AuthService {
       return 'Failed to update region';
     }
   }
+
+  static Future<String?> requestPasswordReset(String email) async {
+    final response = await ApiClient.post(
+      'password-reset/request/',
+      {'email': email},
+      auth: false,
+    );
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
+  static Future<String?> confirmPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    final response = await ApiClient.post(
+      'password-reset/confirm/',
+      {'email': email, 'code': code, 'new_password': newPassword},
+      auth: false,
+    );
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      final data = jsonDecode(response.body);
+      return data['detail'] ?? 'Failed to reset password.';
+    }
+  }
 }
+
