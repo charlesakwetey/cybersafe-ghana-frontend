@@ -4,7 +4,6 @@ import 'token_storage.dart';
 import '../models/user_model.dart';
 import 'dart:io';
 
-
 class AuthService {
   static Future<String?> login(String username, String password) async {
     final response = await ApiClient.post('token/', {
@@ -63,7 +62,11 @@ class AuthService {
   }
 
   static Future<String?> uploadAvatar(File imageFile) async {
-    final response = await ApiClient.uploadFile('me/avatar/', 'avatar', imageFile);
+    final response = await ApiClient.uploadFile(
+      'me/avatar/',
+      'avatar',
+      imageFile,
+    );
     if (response.statusCode == 200) {
       return null;
     } else {
@@ -81,11 +84,9 @@ class AuthService {
   }
 
   static Future<String?> requestPasswordReset(String email) async {
-    final response = await ApiClient.post(
-      'password-reset/request/',
-      {'email': email},
-      auth: false,
-    );
+    final response = await ApiClient.post('password-reset/request/', {
+      'email': email,
+    }, auth: false);
     if (response.statusCode == 200) {
       return null;
     } else {
@@ -98,11 +99,11 @@ class AuthService {
     required String code,
     required String newPassword,
   }) async {
-    final response = await ApiClient.post(
-      'password-reset/confirm/',
-      {'email': email, 'code': code, 'new_password': newPassword},
-      auth: false,
-    );
+    final response = await ApiClient.post('password-reset/confirm/', {
+      'email': email,
+      'code': code,
+      'new_password': newPassword,
+    }, auth: false);
     if (response.statusCode == 200) {
       return null;
     } else {
@@ -110,5 +111,20 @@ class AuthService {
       return data['detail'] ?? 'Failed to reset password.';
     }
   }
-}
 
+  static Future<String?> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final response = await ApiClient.post('change-password/', {
+      'old_password': oldPassword,
+      'new_password': newPassword,
+    });
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      final data = jsonDecode(response.body);
+      return data['detail'] ?? 'Failed to change password.';
+    }
+  }
+}

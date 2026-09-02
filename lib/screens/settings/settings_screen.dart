@@ -5,6 +5,9 @@ import '../../utils/constants.dart';
 import '../../utils/theme_controller.dart';
 import '../auth/login_screen.dart';
 import 'user_profile_screen.dart';
+import 'change_password_screen.dart';
+import 'about_screen.dart';
+import 'help_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,6 +19,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   AppUser? _user;
   bool _isLoadingUser = true;
+  bool _notificationsEnabled = true;
 
   @override
   void initState() {
@@ -144,6 +148,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: _openUserProfile,
                 ),
                 const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: const Text('Change Password'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChangePasswordScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  secondary: const Icon(Icons.notifications_outlined),
+                  title: const Text('Notifications'),
+                  value: _notificationsEnabled,
+                  activeThumbColor: AppColors.navy,
+                  onChanged: (value) {
+                    setState(() {
+                      _notificationsEnabled = value;
+                    });
+                  },
+                ),
+                const Divider(height: 1),
                 ValueListenableBuilder<ThemeMode>(
                   valueListenable: ThemeController.themeMode,
                   builder: (context, mode, _) {
@@ -155,6 +185,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (value) {
                         ThemeController.toggle(value);
                       },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'About & Info',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: const Text('About CyberSafe Ghana'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AboutScreen()),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.help_outline),
+                  title: const Text('Help / FAQ'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HelpScreen()),
                     );
                   },
                 ),

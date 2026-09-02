@@ -31,7 +31,6 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       return;
     }
-    
 
     setState(() {
       _isLoading = true;
@@ -60,8 +59,15 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.ghanaGold
+        : AppColors.navy;
+    
+    final subtitleColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white70
+        : AppColors.charcoal;
+
     return Scaffold(
-      backgroundColor: AppColors.cream,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -75,14 +81,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.navy,
+                  color: accentColor,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Join CyberSafe Ghana',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: AppColors.charcoal),
+                style: TextStyle(fontSize: 14, color: subtitleColor),
               ),
               const SizedBox(height: 28),
               TextField(
@@ -112,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                initialValue: _selectedRegion,
+                value: _selectedRegion,
                 decoration: const InputDecoration(
                   labelText: 'Region',
                   border: OutlineInputBorder(),
@@ -164,7 +170,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
                 child: Text(
                   'Already have an account? Log in',
-                  style: TextStyle(color: AppColors.navy),
+                  style: TextStyle(color: accentColor),
                 ),
               ),
               const SizedBox(height: 24),

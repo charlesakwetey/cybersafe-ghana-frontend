@@ -65,6 +65,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.ghanaGold
+        : AppColors.navy;
+
+    final subtitleColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white70
+        : AppColors.charcoal;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Enter Reset Code')),
       body: SafeArea(
@@ -80,14 +88,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.navy,
+                  color: accentColor,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'We sent a 6-digit code to ${widget.email}',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: AppColors.charcoal),
+                style: TextStyle(fontSize: 14, color: subtitleColor),
               ),
               const SizedBox(height: 28),
               TextField(

@@ -7,6 +7,8 @@ void main() {
   runApp(const CyberSafeGhanaApp());
 }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class CyberSafeGhanaApp extends StatelessWidget {
   const CyberSafeGhanaApp({super.key});
 
@@ -16,6 +18,7 @@ class CyberSafeGhanaApp extends StatelessWidget {
       valueListenable: ThemeController.themeMode,
       builder: (context, mode, _) {
         return MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'CyberSafe Ghana',
           debugShowCheckedModeBanner: false,
           themeMode: mode,

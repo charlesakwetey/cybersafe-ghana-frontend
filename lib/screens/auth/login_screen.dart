@@ -44,8 +44,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.ghanaGold
+        : AppColors.navy;
+
+    final subtitleColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white70
+        : AppColors.charcoal;
+
     return Scaffold(
-      backgroundColor: AppColors.cream,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -53,21 +60,27 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 40),
+              Image.asset(
+                'assets/icon/app_icon_final.png',
+                height: 100,
+                width: 100,
+              ),
+              const SizedBox(height: 16),
               Text(
                 'CyberSafe Ghana',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.navy,
+                  color: accentColor,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Log in to continue',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: AppColors.charcoal),
+                style: TextStyle(fontSize: 14, color: subtitleColor),
               ),
               const SizedBox(height: 32),
               TextField(
@@ -125,8 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
                 child: Text(
-                  "Don't have an account? Sign Up",
-                  style: TextStyle(color: AppColors.navy),
+                  "Don't have an account? Sign up",
+                  style: TextStyle(color: accentColor),
                 ),
               ),
               TextButton(
@@ -139,10 +152,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
                 child: Text(
-                  "Forgot Password?",
-                  style: TextStyle(color: AppColors.navy),
+                  'Forgot password?',
+                  style: TextStyle(color: accentColor),
                 ),
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
