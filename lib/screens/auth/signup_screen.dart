@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../utils/constants.dart';
-import '../home_screen.dart';
+import 'verify_email_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -37,9 +37,10 @@ class _SignupScreenState extends State<SignupScreen> {
       _errorMessage = null;
     });
 
+    final email = _emailController.text.trim();
     final error = await AuthService.signup(
       username: _usernameController.text.trim(),
-      email: _emailController.text.trim(),
+      email: email,
       password: _passwordController.text,
       region: _selectedRegion!,
     );
@@ -52,7 +53,9 @@ class _SignupScreenState extends State<SignupScreen> {
     if (error == null && mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => VerifyEmailScreen(email: email),
+        ),
       );
     }
   }
@@ -62,7 +65,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final accentColor = Theme.of(context).brightness == Brightness.dark
         ? AppColors.ghanaGold
         : AppColors.navy;
-    
+
     final subtitleColor = Theme.of(context).brightness == Brightness.dark
         ? Colors.white70
         : AppColors.charcoal;
@@ -118,7 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedRegion,
+                initialValue: _selectedRegion,
                 decoration: const InputDecoration(
                   labelText: 'Region',
                   border: OutlineInputBorder(),
