@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import '../../models/report_model.dart';
 import '../../services/report_service.dart';
 import '../../utils/constants.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class ReportFormScreen extends StatefulWidget {
-  const ReportFormScreen({super.key});
+  final Report? existingReport;
+
+  const ReportFormScreen({super.key, this.existingReport});
 
   @override
   State<ReportFormScreen> createState() => _ReportFormScreenState();
@@ -20,6 +24,37 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
   bool _isAnonymous = false;
   bool _isSubmitting = false;
   String? _errorMessage;
+  File? _pickedImage;
+  bool _isUploadingEvidence = false;
+
+  bool get _isEditing => widget.existingReport != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.existingReport;
+    if (existing != null) {
+      _descriptionController.text = existing.description;
+      _suspectContactController.text = existing.suspectContact;
+      _selectedScamType = existing.scamType;
+      _selectedRegion = existing.region;
+      _isAnonymous = existing.isAnonymous;
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      imageQuality: 80,
+    );
+    if (picked != null) {
+      setState(() {
+        _pickedImage = File(picked.path);
+      });
+    }
+  }
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -43,19 +78,40 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
         region: _selectedRegion!,
         isAnonymous: _isAnonymous,
       );
-      await ReportService.createReport(report);
+
+      int reportId;
+      if (_isEditing) {
+        final updated = await ReportService.updateReport(
+          widget.existingReport!.id!,
+          report,
+        );
+        reportId = updated.id!;
+      } else {
+        final created = await ReportService.createReport(report);
+        reportId = created.id!;
+      }
+
+      if (_pickedImage != null) {
+        setState(() {
+          _isUploadingEvidence = true;
+        });
+        await ReportService.uploadEvidence(reportId, _pickedImage!);
+      }
 
       if (mounted) {
-        Navigator.pop(context, true); // true signals "a report was created"
+        Navigator.pop(context, true);
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to submit report. Please try again.';
+        _errorMessage = _isEditing
+            ? 'Failed to update report. Please try again.'
+            : 'Failed to submit report. Please try again.';
       });
     } finally {
       if (mounted) {
         setState(() {
           _isSubmitting = false;
+          _isUploadingEvidence = false;
         });
       }
     }
@@ -64,9 +120,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Report a Scam'),
-     ),
+      appBar: AppBar(title: Text(_isEditing ? 'Edit Report' : 'Report a Scam')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -153,6 +207,62 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                   });
                 },
               ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Evidence Photo (optional)',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (_pickedImage != null)
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _pickedImage!,
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _pickedImage = null;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                OutlinedButton.icon(
+                  onPressed: _pickImage,
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  label: const Text('Add Evidence Photo'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: BorderSide(color: AppColors.navy),
+                  ),
+                ),
               const SizedBox(height: 8),
               if (_errorMessage != null)
                 Padding(
@@ -178,7 +288,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Submit Report'),
+                    : Text(_isEditing ? 'Save Changes' : 'Submit Report'),
               ),
               const SizedBox(height: 24),
             ],

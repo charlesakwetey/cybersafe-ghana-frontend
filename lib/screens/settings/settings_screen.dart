@@ -8,6 +8,7 @@ import 'user_profile_screen.dart';
 import 'change_password_screen.dart';
 import 'about_screen.dart';
 import 'help_screen.dart';
+import '../admin/admin_dashboard_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -97,7 +98,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ? NetworkImage(_user!.avatarUrl!)
                               : null,
                           child: _user?.avatarUrl == null
-                              ? const Icon(Icons.person, color: Colors.white, size: 28)
+                              ? const Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 28,
+                                )
                               : null,
                         ),
                         const SizedBox(width: 14),
@@ -107,7 +112,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
                               Text(
                                 'Welcome',
-                                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
                               Text(
                                 _user?.username ?? '',
@@ -127,6 +135,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
             ),
           ),
+          if (_user?.isAdmin == true) ...[
+            const SizedBox(height: 16),
+            Card(
+              child: ListTile(
+                leading: Icon(
+                  Icons.admin_panel_settings_outlined,
+                  color: AppColors.navy,
+                ),
+                title: const Text('Admin Dashboard'),
+                subtitle: const Text('Review and moderate reports'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AdminDashboardScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           Text(
             'Other settings',
@@ -212,7 +242,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const AboutScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const AboutScreen(),
+                      ),
                     );
                   },
                 ),
@@ -224,7 +256,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const HelpScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const HelpScreen(),
+                      ),
                     );
                   },
                 ),

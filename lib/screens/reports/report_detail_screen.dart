@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/report_model.dart';
 import '../../services/report_service.dart';
 import '../../utils/constants.dart';
+import 'report_form_screen.dart';
 
 class ReportDetailScreen extends StatefulWidget {
   final Report report;
@@ -79,6 +80,22 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         actions: [
           if (report.status == 'pending')
             IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () async {
+                final updated = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ReportFormScreen(existingReport: report),
+                  ),
+                );
+                if (updated == true && mounted) {
+                  Navigator.pop(context, true);
+                }
+              },
+            ),
+          if (report.status == 'pending')
+            IconButton(
               icon: _isDeleting
                   ? const SizedBox(
                       height: 20,
@@ -146,6 +163,46 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
               label: 'Submitted anonymously',
               value: report.isAnonymous ? 'Yes' : 'No',
             ),
+            if (report.evidenceUrl != null) ...[
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Evidence Photo',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  report.evidenceUrl!,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: Colors.grey.shade300,
+                      child: const Center(
+                        child: Icon(Icons.broken_image_outlined),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
             if (report.createdAt != null) ...[
               const SizedBox(height: 16),
               _DetailRow(

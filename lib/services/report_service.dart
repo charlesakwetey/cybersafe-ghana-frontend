@@ -1,6 +1,7 @@
 import 'dart:convert';
 import '../models/report_model.dart';
 import 'api_client.dart';
+import 'dart:io';
 
 class ReportService {
   static Future<List<Report>> getReports() async {
@@ -27,5 +28,23 @@ class ReportService {
     if (response.statusCode != 204) {
       throw Exception('Failed to delete report');
     }
+  }
+
+  static Future<Report> updateReport(int id, Report report) async {
+    final response = await ApiClient.patch('reports/$id/', report.toJson());
+    if (response.statusCode == 200) {
+      return Report.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update report: ${response.body}');
+    }
+  }
+
+  static Future<bool> uploadEvidence(int reportId, File imageFile) async {
+    final response = await ApiClient.uploadFile(
+      'reports/$reportId/',
+      'evidence',
+      imageFile,
+    );
+    return response.statusCode == 200;
   }
 }

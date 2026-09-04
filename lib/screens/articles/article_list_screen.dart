@@ -136,7 +136,11 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
               selected: isSelected,
               selectedColor: AppColors.navy,
               labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppColors.charcoal,
+                color: isSelected
+                    ? Colors.white
+                    : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : AppColors.charcoal),
                 fontSize: 13,
               ),
               onSelected: (_) {
