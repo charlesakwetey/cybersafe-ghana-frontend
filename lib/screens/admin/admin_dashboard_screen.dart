@@ -307,7 +307,9 @@ class _AdminReportCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _statusColor(report.status).withValues(alpha: 0.15),
+                      color: _statusColor(
+                        report.status,
+                      ).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -321,20 +323,38 @@ class _AdminReportCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (report.isAnonymous) ...[
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.visibility_off_outlined, size: 13, color: Colors.grey),
-                    SizedBox(width: 4),
-                    Text(
-                      'Anonymous',
-                      style: TextStyle(fontSize: 11, color: Colors.grey, fontStyle: FontStyle.italic),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(Icons.person_outline, size: 13, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(
+                    report.reporterUsername ?? 'Unknown user',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (report.isAnonymous) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'Anonymous to public',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
                     ),
                   ],
-                ),
-              ],
+                ],
+              ),
               const SizedBox(height: 6),
               Text(
                 report.description,

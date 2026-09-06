@@ -9,7 +9,8 @@ class AdminReportDetailScreen extends StatefulWidget {
   const AdminReportDetailScreen({super.key, required this.report});
 
   @override
-  State<AdminReportDetailScreen> createState() => _AdminReportDetailScreenState();
+  State<AdminReportDetailScreen> createState() =>
+      _AdminReportDetailScreenState();
 }
 
 class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
@@ -68,11 +69,17 @@ class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
                 Expanded(
                   child: Text(
                     ScamTypes.labelFor(_report.scamType),
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _statusColor(_report.status).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -89,35 +96,53 @@ class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            if (_report.isAnonymous)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
+            Row(
+              children: [
+                Icon(Icons.person_outline, size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text(
+                  _report.reporterUsername ?? 'Unknown user',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.visibility_off_outlined, size: 14, color: Colors.grey),
-                    SizedBox(width: 4),
-                    Text('Submitted anonymously', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-              ),
+                if (_report.isAnonymous) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Anonymous to public',
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ],
+            ),
             const SizedBox(height: 16),
             _DetailRow(label: 'Description', value: _report.description),
             const SizedBox(height: 16),
             _DetailRow(label: 'Region', value: _report.region),
             if (_report.suspectContact.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _DetailRow(label: 'Suspect / Business Details', value: _report.suspectContact),
+              _DetailRow(
+                label: 'Suspect / Business Details',
+                value: _report.suspectContact,
+              ),
             ],
             if (_report.createdAt != null) ...[
               const SizedBox(height: 16),
               _DetailRow(
                 label: 'Submitted on',
-                value: '${_report.createdAt!.day}/${_report.createdAt!.month}/${_report.createdAt!.year}',
+                value:
+                    '${_report.createdAt!.day}/${_report.createdAt!.month}/${_report.createdAt!.year}',
               ),
             ],
             if (_report.evidenceUrl != null) ...[
@@ -126,7 +151,11 @@ class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Evidence Photo',
-                  style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -139,12 +168,17 @@ class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, progress) {
                     if (progress == null) return child;
-                    return const SizedBox(height: 240, child: Center(child: CircularProgressIndicator()));
+                    return const SizedBox(
+                      height: 240,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
                   },
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 240,
                     color: Colors.grey.shade300,
-                    child: const Center(child: Icon(Icons.broken_image_outlined)),
+                    child: const Center(
+                      child: Icon(Icons.broken_image_outlined),
+                    ),
                   ),
                 ),
               ),
@@ -156,8 +190,15 @@ class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: _isProcessing ? null : _handleReject,
-                      icon: Icon(Icons.close, size: 18, color: AppColors.danger),
-                      label: Text('Reject', style: TextStyle(color: AppColors.danger)),
+                      icon: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: AppColors.danger,
+                      ),
+                      label: Text(
+                        'Reject',
+                        style: TextStyle(color: AppColors.danger),
+                      ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: BorderSide(color: AppColors.danger),
@@ -168,13 +209,24 @@ class _AdminReportDetailScreenState extends State<AdminReportDetailScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _isProcessing ? null : _handleVerify,
-                      icon: const Icon(Icons.check, size: 18, color: Colors.white),
+                      icon: const Icon(
+                        Icons.check,
+                        size: 18,
+                        color: Colors.white,
+                      ),
                       label: _isProcessing
                           ? const SizedBox(
-                              height: 16, width: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
-                          : const Text('Verify', style: TextStyle(color: Colors.white)),
+                          : const Text(
+                              'Verify',
+                              style: TextStyle(color: Colors.white),
+                            ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -202,7 +254,14 @@ class _DetailRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(value, style: const TextStyle(fontSize: 15)),
       ],
