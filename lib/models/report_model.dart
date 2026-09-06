@@ -8,6 +8,7 @@ class Report {
   final String status;
   final bool isAnonymous;
   final DateTime? createdAt;
+  final String? reporterUsername;
 
   Report({
     this.id,
@@ -19,6 +20,7 @@ class Report {
     this.status = 'pending',
     this.isAnonymous = false,
     this.createdAt,
+    this.reporterUsername,
   });
 
   factory Report.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class Report {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
+      reporterUsername: json['reporter_username'],
     );
   }
 

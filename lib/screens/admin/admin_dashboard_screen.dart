@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/report_model.dart';
 import '../../services/admin_service.dart';
 import '../../utils/constants.dart';
+import 'admin_report_detail_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -91,6 +92,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   Future<void> _handleReject(Report report) async {
     final success = await AdminService.rejectReport(report.id!);
     if (success) {
+      _loadAll();
+    }
+  }
+
+  Future<void> _openDetail(Report report) async {
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdminReportDetailScreen(report: report),
+      ),
+    );
+    if (changed == true) {
       _loadAll();
     }
   }
@@ -194,6 +207,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         final report = _reports![index];
         return _AdminReportCard(
           report: report,
+          onTap: () => _openDetail(report),
           onVerify: () => _handleVerify(report),
           onReject: () => _handleReject(report),
         );
@@ -241,11 +255,13 @@ class _StatCard extends StatelessWidget {
 
 class _AdminReportCard extends StatelessWidget {
   final Report report;
+  final VoidCallback onTap;
   final VoidCallback onVerify;
   final VoidCallback onReject;
 
   const _AdminReportCard({
     required this.report,
+    required this.onTap,
     required this.onVerify,
     required this.onReject,
   });
@@ -263,127 +279,145 @@ class _AdminReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    ScamTypes.labelFor(report.scamType),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _statusColor(report.status).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    report.status.toUpperCase(),
-                    style: TextStyle(
-                      color: _statusColor(report.status),
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              report.description,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              report.region,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-            if (report.evidenceUrl != null) ...[
-              const SizedBox(height: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  report.evidenceUrl!,
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return const SizedBox(
-                      height: 140,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 140,
-                      color: Colors.grey.shade300,
-                      child: const Center(
-                        child: Icon(Icons.broken_image_outlined),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-            if (report.status == 'pending') ...[
-              const SizedBox(height: 12),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: onReject,
-                      icon: Icon(
-                        Icons.close,
-                        size: 16,
-                        color: AppColors.danger,
-                      ),
-                      label: Text(
-                        'Reject',
-                        style: TextStyle(color: AppColors.danger),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.danger),
+                    child: Text(
+                      ScamTypes.labelFor(report.scamType),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onVerify,
-                      icon: const Icon(
-                        Icons.check,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Verify',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _statusColor(report.status).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      report.status.toUpperCase(),
+                      style: TextStyle(
+                        color: _statusColor(report.status),
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ],
               ),
+              if (report.isAnonymous) ...[
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.visibility_off_outlined, size: 13, color: Colors.grey),
+                    SizedBox(width: 4),
+                    Text(
+                      'Anonymous',
+                      style: TextStyle(fontSize: 11, color: Colors.grey, fontStyle: FontStyle.italic),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 6),
+              Text(
+                report.description,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                report.region,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              if (report.evidenceUrl != null) ...[
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    report.evidenceUrl!,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return const SizedBox(
+                        height: 140,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 140,
+                        color: Colors.grey.shade300,
+                        child: const Center(
+                          child: Icon(Icons.broken_image_outlined),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+              if (report.status == 'pending') ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: onReject,
+                        icon: Icon(
+                          Icons.close,
+                          size: 16,
+                          color: AppColors.danger,
+                        ),
+                        label: Text(
+                          'Reject',
+                          style: TextStyle(color: AppColors.danger),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppColors.danger),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: onVerify,
+                        icon: const Icon(
+                          Icons.check,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Verify',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.success,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

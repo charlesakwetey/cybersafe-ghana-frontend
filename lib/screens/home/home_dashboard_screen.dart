@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../models/report_model.dart';
 import '../../services/stats_service.dart';
 import '../../utils/constants.dart';
+import '../reports/public_report_detail_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   const HomeDashboardScreen({super.key});
@@ -50,9 +51,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CyberSafe Ghana'),
-      ),
+      appBar: AppBar(title: const Text('CyberSafe Ghana')),
       body: RefreshIndicator(onRefresh: _loadData, child: _buildBody()),
     );
   }
@@ -167,8 +166,10 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                 reservedSize: 32,
                 interval: 1,
                 getTitlesWidget: (value, meta) {
-                  if (value != value.roundToDouble()) return const SizedBox.shrink();
-                  final textColor = Theme.of(context).brightness == Brightness.dark
+                  if (value != value.roundToDouble())
+                    return const SizedBox.shrink();
+                  final textColor =
+                      Theme.of(context).brightness == Brightness.dark
                       ? Colors.white70
                       : Colors.black87;
                   return Text(
@@ -193,12 +194,16 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                     _typeStats![index]['scam_type'],
                   );
                   final shortLabel = label.split(' ').first;
-                  final textColor = Theme.of(context).brightness == Brightness.dark
+                  final textColor =
+                      Theme.of(context).brightness == Brightness.dark
                       ? Colors.white70
                       : Colors.black87;
                   return Padding(
                     padding: const EdgeInsets.only(top: 6),
-                    child: Text(shortLabel, style: TextStyle(fontSize: 10, color: textColor)),
+                    child: Text(
+                      shortLabel,
+                      style: TextStyle(fontSize: 10, color: textColor),
+                    ),
                   );
                 },
               ),
@@ -248,52 +253,70 @@ class _VerifiedReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.verified, color: AppColors.success, size: 18),
-                const SizedBox(width: 6),
-                Text(
-                  ScamTypes.labelFor(report.scamType),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PublicReportDetailScreen(report: report),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 10),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.verified, color: AppColors.success, size: 18),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      ScamTypes.labelFor(report.scamType),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              report.description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Text(
-                  report.region,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                if (report.suspectContact.isNotEmpty) ...[
+                  const Icon(Icons.chevron_right, color: Colors.grey, size: 18),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                report.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Text(
+                    report.region,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const Text(' • ', style: TextStyle(color: Colors.grey)),
                   Expanded(
                     child: Text(
-                      report.suspectContact,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      report.isAnonymous
+                          ? 'Anonymous'
+                          : (report.reporterUsername ?? 'Unknown'),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

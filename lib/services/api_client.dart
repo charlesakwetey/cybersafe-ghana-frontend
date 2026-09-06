@@ -7,8 +7,13 @@ import '../screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class ApiClient {
-  static const String baseUrl = 'http://10.0.2.2:8000/api';
+  // Set this to true when testing on the Android emulator,
+  // false when testing on a real phone over Wi-Fi.
+  static const bool useEmulator = true;
 
+  static const String baseUrl = useEmulator
+       ? 'http://10.0.2.2:8000/api'
+       : 'http://192.168.0.3:8000/api';
   static Future<Map<String, String>> _headers({bool auth = true}) async {
     final headers = {'Content-Type': 'application/json'};
     if (auth) {
